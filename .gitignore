@@ -13,7 +13,8 @@
 !/storage/imgPerfil/.gitkeep
 
 #env
-/env
+/.env
+
 
 # misc
 .DS_Store
