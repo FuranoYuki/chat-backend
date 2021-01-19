@@ -8,6 +8,13 @@
 # testing
 /coverage
 
+#storage
+/storage/imgPerfil/*
+!/storage/imgPerfil/.gitkeep
+
+#env
+/env
+
 # misc
 .DS_Store
 .env.local
