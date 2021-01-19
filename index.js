@@ -14,7 +14,6 @@ const app = express();
 
 //static files
 app.use('/imagePerfil', express.static(path.resolve(__dirname, 'storage', 'imgPerfil')));
-app.use(express.static(path.join(__dirname, 'build')));
 
 //cors
 app.use(cors())
