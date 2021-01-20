@@ -1,20 +1,19 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
-/.pnp
+node_modules
+.pnp
 .pnp.js
 
 # testing
-/coverage
+coverage
 
 #storage
-/storage/imgPerfil/*
-!/storage/imgPerfil/.gitkeep
+storage/imgPerfil/*
+!storage/imgPerfil/.gitkeep
 
 #env
-/.env
-
+.env
 
 # misc
 .DS_Store
