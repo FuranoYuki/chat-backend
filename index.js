@@ -29,62 +29,11 @@ require('./app/controllers')(app);
 const server = http.createServer(app);
 const io = socketio(server)
 
-io.use((socket, next) => {
-    const authHeader = socket.handshake.query.auth;
+//socket
+const authMiddleware = require("./socket/authMiddleware");
+io.use(authMiddleware);
+require('./socket')(io);
 
-    if(!authHeader)
-        next(new Error("header authorization doesn't exist"));
 
-    const parts = authHeader.split(" ");
-
-    if(parts.length < 2)
-        next(new Error("header authorization incomplete"));
-
-    const [schema, token] = parts;
-
-    if(!/^Bearer$/i.test(schema))
-        next(new Error("the Bearer in the header authorization is missing"));
-
-    jwt.verify(token, process.env.SECRET_API, (error, decoded) => {
-        if(error){
-            const tokenExpired = error.expiredAt;
-            next(new Error({
-                message: "failed at verify header authorization",
-                tokenExpired
-            }));
-        }
-        socket.userId = decoded.id
-        next();
-    }); 
-});
-
-io.on("connection", socket => {
-
-    socket.on('userRoom', (friends, name) => {
-        friends.forEach(element => {
-            socket.join(`${element._id}`);
-        });
-        socket.join(`${name}`);
-    });
-
-    socket.on('changeStatus', data => {
-        data.forEach(room => {
-            socket.to(`${room._id}`).emit('friendChangeStatus');
-        })
-    });
-
-    socket.on('pending', () => {
-        console.log(socket.userId);
-        socket.to(socket.userId).emit('newPending')
-    })
-
-    socket.on('sendMessage', data => {
-        socket.to(`${data}`).emit('newMessage');
-    });
-
-    socket.on("disconnect", () => {
-        console.log("user disconnected");
-    })
-});
 
 server.listen(process.env.PORT || 3001);

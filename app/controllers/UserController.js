@@ -16,7 +16,6 @@ const io = require('../../index');
 //authMiddleware
 const authMiddleware = require('../middlewares/authMiddleware');
 const multerMiddleware = require('../middlewares/multerMiddleware');
-const { populate } = require('../models/UserModel');
 
 const createToken = (data = {}) => {
     const token = jwt.sign({id: data.id}, process.env.SECRET_API, {
