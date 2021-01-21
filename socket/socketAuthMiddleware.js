@@ -1,6 +1,8 @@
+const jwt = require("jsonwebtoken");
+
 module.exports = (socket, next) => {
     const authHeader = socket.handshake.query.auth;
-
+    
     if(!authHeader)
         next(new Error("header authorization doesn't exist"));
 
@@ -10,6 +12,7 @@ module.exports = (socket, next) => {
         next(new Error("header authorization incomplete"));
 
     const [schema, token] = parts;
+
 
     if(!/^Bearer$/i.test(schema))
         next(new Error("the Bearer in the header authorization is missing"));
@@ -22,6 +25,7 @@ module.exports = (socket, next) => {
                 tokenExpired
             }));
         }
+
         socket.userId = decoded.id
         next();
     }); 

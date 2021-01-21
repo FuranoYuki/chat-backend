@@ -137,7 +137,6 @@ routes.post("/sendMessage", async (req, res) => {
         res.send();
 
     } catch (error) {
-        console.log(error);
         res.status(400).send("failed at sendMessage");
     }
 })

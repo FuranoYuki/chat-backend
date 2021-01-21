@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 
-
 //models
 const User = require('../models/UserModel');
 const ImagePerfil = require('../models/ImagePerfilModel');
@@ -175,10 +174,10 @@ routes.post('/getUserConfig', authMiddleware, async(req, res) => {
         const user = await (await User.findById(req.userId)
                                         .populate({
                                             path: "imagePerfil",
-                                            select: "key"
+                                            select: "key name"
                                         })
                                         .select('name email code imagePerfil imagePerfilDefault'));
-                                        
+
         return res.send(user);
     } catch (error) {
         return res.status(400).send('failed at getUserConfig')
@@ -420,15 +419,21 @@ routes.post('/deleteAccount', authMiddleware, async(req, res) => {
     }
 });
 
-routes.post('/changeImagePerfil', authMiddleware, multer(multerMiddleware).single("file"), async(req, res) => {
+routes.post('/changeImagePerfil', authMiddleware, multer(multerMiddleware).single("file"), async(req, res, next) => {
     try {
-        const {originalname: name, size, filename: key, path, mimetype: type} = req.file
+
+        if(!req.file){
+            return res.status(400).send('failed at changeImagePerfil, could not find file');
+        }
+
+        const {originalname: name, size, mimetype: type} = req.file
+        const key = `${name}-${await bcrypt.hash(name, 14)}`;
 
         const imagePerfil = await ImagePerfil.create({
             name,
             key,
             size,
-            path,
+            path: publicUrl,
             user: req.userId,
             type
         })
@@ -439,8 +444,8 @@ routes.post('/changeImagePerfil', authMiddleware, multer(multerMiddleware).singl
             }
         });
 
-
-        return res.send()
+    
+        return res.send();
     } catch (error) {
         return res.status(400).send('failed at changeImagePerfil')
     }

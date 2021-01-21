@@ -1,4 +1,4 @@
-module.exports = io => io.on("connection", socket => {
+module.exports =  socket => {
 
     socket.on('userRoom', (friends, name) => {
         friends.forEach(element => {
@@ -14,7 +14,6 @@ module.exports = io => io.on("connection", socket => {
     });
 
     socket.on('pending', () => {
-        console.log(socket.userId);
         socket.to(socket.userId).emit('newPending')
     })
 
@@ -23,6 +22,6 @@ module.exports = io => io.on("connection", socket => {
     });
 
     socket.on("disconnect", () => {
-        console.log("user disconnected");
+        
     })
-});
+};

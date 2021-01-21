@@ -4,7 +4,6 @@ const http = require("http");
 const cors = require("cors");
 const helmet = require("helmet");
 const socketio = require('socket.io')
-const jwt = require("jsonwebtoken");
 const path = require('path');
 
 require("dotenv").config();
@@ -29,10 +28,12 @@ require('./app/controllers')(app);
 const server = http.createServer(app);
 const io = socketio(server)
 
-//socket
-const authMiddleware = require("./socket/authMiddleware");
-io.use(authMiddleware);
-require('./socket')(io);
+//socket-middleware
+const auth = require('./socket/socketAuthMiddleware');
+io.use(auth);
+//socket-routes
+const userConnection = require('./socket/socketUserRoutes');
+io.on("connection", userConnection);
 
 
 

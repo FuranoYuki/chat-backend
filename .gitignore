@@ -15,6 +15,9 @@ storage/imgPerfil/*
 #env
 .env
 
+
+chat-db68c-firebase-adminsdk-vdd45-cc8f609ebc.json
+
 # misc
 .DS_Store
 .env.local
