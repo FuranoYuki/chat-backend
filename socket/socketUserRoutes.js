@@ -13,8 +13,12 @@ module.exports =  socket => {
         })
     });
 
+    socket.on('startCall', data => {
+        socket.to(data).emit('receving call', socket.userId);
+    })
+
     socket.on('pending', () => {
-        socket.to(socket.userId).emit('newPending')
+        socket.to(socket.userId).emit('newPending', socket.userId)
     })
 
     socket.on('sendMessage', data => {

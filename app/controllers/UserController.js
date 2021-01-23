@@ -79,11 +79,7 @@ routes.post('/getFriends', authMiddleware, async(req, res) => {
         const friends = await User.findById(req.userId)
                                     .populate({
                                         path: 'friends',
-                                        select: 'name code status imagePerfil imagePerfilDefault',
-                                        populate: {
-                                            path: 'imagePerfil',
-                                            select: "key"
-                                        }
+                                        select: 'name code status imagePerfilDefault',
                                     })
                                     .select('friends');
         return res.send(friends);
@@ -99,7 +95,7 @@ routes.post('/getPending', authMiddleware, async(req, res) => {
                                         path: 'pending',
                                         populate: {
                                             path: 'user',
-                                            select: 'name code imagePerfil imagePerfilDefault'
+                                            select: 'name code imagePerfilDefault'
                                         }
                                     })
                                     .select('pending');
@@ -117,11 +113,7 @@ routes.post('/getUserChats', authMiddleware, async(req, res) => {
                                     path: 'chats',
                                     populate: {
                                         path: 'friend',
-                                        select: 'name code status imagePerfil imagePerfilDefault',
-                                        populate: {
-                                            path: 'imagePerfil',
-                                            select: 'key'
-                                        }
+                                        select: 'name code status imagePerfilDefault',
                                     }
                                 })
                                 .select('chats');
@@ -154,10 +146,7 @@ routes.post("/getUser", authMiddleware, async (req, res) => {
                                     },
                                     select: "friend messages"
                                 })
-                                .populate({
-                                    path: "imagePerfil",
-                                    select: "key"
-                                })
+
         if(!user){
             return res.status(400).send("user doesn't exist");
         }
@@ -172,11 +161,7 @@ routes.post("/getUser", authMiddleware, async (req, res) => {
 routes.post('/getUserConfig', authMiddleware, async(req, res) => {
     try {
         const user = await (await User.findById(req.userId)
-                                        .populate({
-                                            path: "imagePerfil",
-                                            select: "key name"
-                                        })
-                                        .select('name email code imagePerfil imagePerfilDefault'));
+                                        .select('name email code  imagePerfilDefault'));
 
         return res.send(user);
     } catch (error) {
@@ -450,6 +435,21 @@ routes.post('/changeImagePerfil', authMiddleware, multer(multerMiddleware).singl
         return res.status(400).send('failed at changeImagePerfil')
     }
 });
+
+routes.post('/getFriend', authMiddleware, async(req, res) => {
+    try {
+        const {id} = req.body
+
+        const friend = await User.findById(id).select('name imagePerfilDefault')
+
+        if(!friend) return res.status(400).json({message: 'failed at findById in getFriend'})
+
+        return res.send(friend)
+
+    } catch (error) {
+        return res.status(400).json({message: 'failed at getFriend'})
+    }
+})
 
 
 module.exports = app => app.use("/user", routes);
