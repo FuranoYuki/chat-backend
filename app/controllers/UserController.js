@@ -315,9 +315,14 @@ routes.post("/changeStatus", authMiddleware, async(req, res) => {
     try {
         const {status} = req.body
 
-        await User.findByIdAndUpdate(req.userId, {$set :{status}})
+        const user = await User.findByIdAndUpdate(req.userId, {$set :{status}}, {new: true})
+                                .populate({
+                                    path: 'friends',
+                                    select: 'name code'
+                                })
+                                .select('name status code imagePerfilDefault friends')
 
-        res.send()
+        res.send(user)
     } catch (error) {
         res.status(400).send("error at changeStatus")
     }
@@ -438,9 +443,9 @@ routes.post('/changeImagePerfil', authMiddleware, multer(multerMiddleware).singl
 
 routes.post('/getFriend', authMiddleware, async(req, res) => {
     try {
-        const {id} = req.body
+        const {name, code} = req.body
 
-        const friend = await User.findById(id).select('name imagePerfilDefault')
+        const friend = await User.findOne({name, code}).select('name imagePerfilDefault')
 
         if(!friend) return res.status(400).json({message: 'failed at findById in getFriend'})
 
@@ -451,5 +456,18 @@ routes.post('/getFriend', authMiddleware, async(req, res) => {
     }
 })
 
+
+routes.post('/getUserBasicInfo', authMiddleware, async(req, res) => {
+    try {
+        const user = await User.findById(req.userId).select('name code status imagePerfilDefault')
+        
+        if(!user)
+            return res.status(400).send('user doesnt exist')
+
+        return res.send(user)
+    } catch (error) {
+        return res.status(400).send('failed at getUserBasicInfo')
+    }
+})
 
 module.exports = app => app.use("/user", routes);

@@ -21,19 +21,11 @@ routes.post("/getChat", async(req, res) => {
         const chat = await Chat.findOne({user: req.userId, friend: friend_id})
                                 .populate({
                                     path: "friend", 
-                                    select: "name code status imagePerfil imagePerfilDefault",
-                                    populate: {
-                                        path:'imagePerfil',
-                                        select: 'key'
-                                    }
+                                    select: "name code status imagePerfilDefault",
                                 })
                                 .populate({
                                     path: "user", 
-                                    select: "name imagePerfil imagePerfilDefault",
-                                    populate: {
-                                        path: "imagePerfil",
-                                        select: "key"
-                                    }
+                                    select: "name code imagePerfilDefault",
                                 });
 
         if(!chat)
@@ -64,7 +56,7 @@ routes.post("/createChat", async(req, res) => {
         });
 
         chat
-        .populate({path: "friend", select: "name code status"})
+        .populate({path: "friend", select: "name code status imagePerfilDefault"})
         .populate({path: "user", select: "name"})
         .execPopulate();
 
