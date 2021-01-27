@@ -5,7 +5,7 @@ module.exports =  socket => {
     });
 
     socket.on('changeStatus', data => {
-        data.forEach(room => {
+        data.friends.forEach(room => {
             socket.to(`${room.name + '' + room.code}`).emit('friendChangeStatus');
         })
     });

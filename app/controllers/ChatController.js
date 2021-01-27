@@ -18,15 +18,22 @@ routes.post("/getChat", async(req, res) => {
     const {friend_id} = req.body;
 
     try {
-        const chat = await Chat.findOne({user: req.userId, friend: friend_id})
-                                .populate({
-                                    path: "friend", 
-                                    select: "name code status imagePerfilDefault",
-                                })
-                                .populate({
-                                    path: "user", 
-                                    select: "name code imagePerfilDefault",
-                                });
+        const chat = await Chat.findOne({
+            user: req.userId, 
+            friend: friend_id, 
+        }, {
+            messages: {
+                $slice: -20
+            }
+        })
+        .populate({
+            path: "friend", 
+            select: "name code status imagePerfilDefault",
+        })
+        .populate({
+            path: "user", 
+            select: "name code imagePerfilDefault",
+        })                      
 
         if(!chat)
             return res.status(400).send("chat doesn't exist");

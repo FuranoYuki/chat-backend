@@ -37,7 +37,11 @@ routes.post("/login", async(req, res) => {
             return res.status(400).send("this e-mail isn't register in our database");
         }
 
-        if(!bcrypt.compare(password, exist.password)){
+        const compare =  await bcrypt.compare(password, exist.password)
+
+        exist.password = undefined
+
+        if(!compare){
             return res.status(400).send('this password is wrong');
         }
         
