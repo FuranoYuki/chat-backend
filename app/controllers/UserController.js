@@ -15,6 +15,7 @@ const io = require('../../index');
 //authMiddleware
 const authMiddleware = require('../middlewares/authMiddleware');
 const multerMiddleware = require('../middlewares/multerMiddleware');
+const { findByIdAndUpdate } = require('../models/UserModel');
 
 const createToken = (data = {}) => {
     const token = jwt.sign({id: data.id}, process.env.SECRET_API, {
@@ -324,7 +325,7 @@ routes.post("/changeStatus", authMiddleware, async(req, res) => {
                                     path: 'friends',
                                     select: 'name code'
                                 })
-                                .select('name status code imagePerfilDefault friends')
+                                .select('name status code mute imagePerfilDefault friends')
 
         res.send(user)
     } catch (error) {
@@ -471,6 +472,19 @@ routes.post('/getUserBasicInfo', authMiddleware, async(req, res) => {
         return res.send(user)
     } catch (error) {
         return res.status(400).send('failed at getUserBasicInfo')
+    }
+})
+
+routes.post('/changeUserBasic', authMiddleware, async(req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(req.userId, req.body, {new: true}).select('name code status imagePerfilDefault')
+
+        if(!user)
+            return res.status(400).send('failed at changeUserBasic')
+
+        return res.send(user)
+    } catch (error) {
+        return res.status(400).send('failed at changeUserBasic')
     }
 })
 
