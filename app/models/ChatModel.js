@@ -29,12 +29,7 @@ const ChatSchema = mongoose.Schema({
             default: Date.now()
         }
     }]
-    ,
-    createdAt:{
-        type: Date,
-        default: Date.now()
-    }
-});
+}, {timestamps: true});
 
 const Chat = mongoose.model("Chat", ChatSchema);
 

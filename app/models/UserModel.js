@@ -22,7 +22,7 @@ const UserSchema = mongoose.Schema({
     },
     imagePerfilDefault:{
         type: String,
-        default: "dog.jpeg"
+        default: "gs://chat-db68c.appspot.com/default/dog.jpeg"
     },
     friends: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -40,9 +40,10 @@ const UserSchema = mongoose.Schema({
         sender: Boolean,
         receiver: Boolean
     }],
-    notifications:{
-        type: Number
-    },
+    notifications:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Notification'
+    }],
     chats:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chat"
@@ -50,12 +51,8 @@ const UserSchema = mongoose.Schema({
     code: {
         type: String,
         default: '@9090'
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now()
     }
-});
+}, {timestamps: true});
 
 UserSchema.pre("save", async function(next){
     const hash = await bcrypt.hash(this.password, 10);

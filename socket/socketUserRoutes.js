@@ -1,6 +1,6 @@
 module.exports =  socket => {
-
     socket.on('userRoom', (name) => {
+        console.log('room join', name);
         socket.join(name);
     });
 
@@ -10,8 +10,23 @@ module.exports =  socket => {
         })
     });
 
-    socket.on('pending', to => {
-        socket.to(to).emit('pendingNotification')
+    socket.on('friendRemoved', data => {
+        socket.to(data).emit('friendRemoved')
+    })
+
+    socket.on('pendingRequest', to => {
+        console.log('pendingRequest');
+        socket.to(to).emit('pendingRequest')
+    })
+
+    socket.on('pendingRecuse', to => {
+        console.log('pendingRecuse');
+        socket.to(to).emit('pendingNotificationRecuse')
+    })
+
+    socket.on('pendingAccept', to => {
+        console.log('pendingAccept');
+        socket.to(to).emit('pendingNotificationAccept')
     })
 
     socket.on('startCall', data => {
@@ -20,7 +35,7 @@ module.exports =  socket => {
     })
 
     socket.on('acceptedCall', data => {
-        console.log('accept Call and send');
+        console.log('accept Call');
         socket.to(data).emit('acceptedCall')
     })
 
@@ -30,12 +45,12 @@ module.exports =  socket => {
     })
 
     socket.on('callOffer', data => {
-        console.log('create offer and send');
+        console.log('send offer');
         socket.to(data.to).emit('callOffer', {signal: data.signal, from: data.from})
     })
 
     socket.on('callAnswer', data => {
-        console.log('receive Offer and answer');
+        console.log('send answer');
         socket.to(data.to).emit('callAnswer', (data.signal))
     })
 
@@ -43,27 +58,14 @@ module.exports =  socket => {
         socket.to(data.to).emit('webrtc_ice_candidate', {label: data.label, candidate: data.candidate})
     })
 
+    socket.on('finishCall', (data) => {
+        socket.to(data).emit('finishCall')
+    })
+
     socket.on('sendMessage', to => {
         socket.to(to).emit('newMessage');
     });
 
     socket.on("disconnect", () => {
-        
     })
-};
-
-function addLocalTracks (rtcPeerConnection) {
-    stream.getTracks().forEach((track) => {
-        rtcPeerConnection.addTrack(track, stream)
-    })
-}
-
-function iceCandidate (event) {
-    if (event.candidate) {
-        socket.emit('ice-candidate', {
-            to,
-            candidate: event.candidate.candidate,
-            label: event.candidate.sdpMLineIndex
-        })
-    }
 }

@@ -12,11 +12,11 @@ coverage
 storage/imgPerfil/*
 !storage/imgPerfil/.gitkeep
 
+services/*.json
+
 #env
 .env
 
-
-chat-db68c-firebase-adminsdk-vdd45-cc8f609ebc.json
 
 # misc
 .DS_Store

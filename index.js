@@ -11,9 +11,6 @@ require("dotenv").config();
 //config middleware
 const app = express();
 
-//static files
-app.use('/imagePerfil', express.static(path.resolve(__dirname, 'storage', 'imgPerfil')));
-
 //cors
 app.use(cors())
 //helmet
