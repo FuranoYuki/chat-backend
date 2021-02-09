@@ -12,8 +12,6 @@ coverage
 storage/imgPerfil/*
 !storage/imgPerfil/.gitkeep
 
-services/*.json
-
 #env
 .env
 
