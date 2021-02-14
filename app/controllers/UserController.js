@@ -274,6 +274,9 @@ routes.post("/pendingAdd", authMiddleware, async (req, res) => {
         
         if(verifyFriends)
             return res.status(400).send({error: 'you are already friend with this user'})
+
+        if(verifyReceiver._id == req.userId)
+            return res.status(400).send({error: 'you cant send a request for yourself !'})
         
         const receiver = await User.findOneAndUpdate({name, code}, 
             {

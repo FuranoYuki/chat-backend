@@ -30,7 +30,7 @@ const UserSchema = mongoose.Schema({
     }],
     status:{
         type: String,
-        default: 'Offline'
+        default: 'Online'
     },
     pending: [{
         user: {
