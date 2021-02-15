@@ -1,6 +1,5 @@
 module.exports =  socket => {
     socket.on('userRoom', (name) => {
-        console.log('room join', name);
         socket.join(name);
     });
 
@@ -15,17 +14,14 @@ module.exports =  socket => {
     })
 
     socket.on('pendingRequest', to => {
-        console.log('pendingRequest');
         socket.to(to).emit('pendingRequest')
     })
 
     socket.on('pendingRecuse', to => {
-        console.log('pendingRecuse');
         socket.to(to).emit('pendingNotificationRecuse')
     })
 
     socket.on('pendingAccept', to => {
-        console.log('pendingAccept');
         socket.to(to).emit('pendingNotificationAccept')
     })
 
@@ -35,17 +31,14 @@ module.exports =  socket => {
     })
 
     socket.on('acceptedCall', data => {
-        console.log('accept Call');
         socket.to(data).emit('acceptedCall')
     })
 
     socket.on('recusedCall', data => {
-        console.log('recusedCall and send');
         socket.to(data).emit('recusedCall')
     })
 
     socket.on('callOffer', data => {
-        console.log('send offer');
         socket.to(data.to).emit('callOffer', {signal: data.signal, from: data.from})
     })
 
