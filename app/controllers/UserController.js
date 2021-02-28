@@ -19,7 +19,7 @@ const io = require('../../index');
 //authMiddleware
 const authMiddleware = require('../middlewares/authMiddleware');
 const multerMiddleware = require('../middlewares/multerMiddleware');
-const { populate, remove } = require('../models/UserModel');
+const { populate, remove, findById } = require('../models/UserModel');
 
 const createToken = (data = {}) => {
     const token = jwt.sign({id: data.id}, process.env.SECRET_API, {
@@ -402,6 +402,26 @@ routes.post("/changeStatus", authMiddleware, async(req, res) => {
     }
 });
 
+routes.post('/userOnline', authMiddleware, async(req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.userId, {$set: {status: 'Online'}})
+
+        res.send()
+    } catch (error) {
+        res.status(400).send({message: 'error at userOnline'})
+    }
+})
+
+routes.post('/userOffline', authMiddleware, async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.userId, {$set: {status: 'Offline'}})
+
+        res.send()
+    } catch (error) {
+        res.status(400).send({message: 'error at userOffline'})
+    }
+})
+
 routes.post("/changeName", authMiddleware, async(req, res) => {
     try {
         const {name, password} = req.body
@@ -672,7 +692,7 @@ routes.post('/getUserNotification', authMiddleware, async (req, res) => {
                                     select: 'name imagePerfil imagePerfilDefault'
                                 }
                             })
-                            .select('notification')
+                            .select('notifications')
 
         if(!user)
             return res.status(400).send({error: 'user doesnt exist, failed at getUserNotification'})
@@ -684,8 +704,7 @@ routes.post('/getUserNotification', authMiddleware, async (req, res) => {
                 data.from.imagePerfil.path = await urlFromGoogleCloud(data.from.imagePerfil.path)
             })
         ) 
-
-        return res.status(200).send(user)
+        return res.status(200).send(user.notifications)
     } catch (error) {
         return res.status(400).send({error: 'failed at getUserNotification'})
     }
@@ -696,18 +715,20 @@ routes.post('/removeUserNotification', authMiddleware, async(req, res) => {
         const {friend_id} = req.body
 
         const exist = await Notification.findOne({user: req.userId, from: friend_id})
-        
-        if(exist){
-            const not = await Notification.findOneAndDelete({user: req.userId, from: friend_id})
 
-            await User.findByIdAndUpdate(req.userId, {
-                $pull: {
-                    notifications: not._id
-                }
-            })
-        }
+        if(!exist)
+            return res.status(400).send({error: 'notifications doesnt exist, failed at removeUserNotification'})
+        
+        const not = await Notification.findOneAndDelete({user: req.userId, from: friend_id})
+
+        await User.findByIdAndUpdate(req.userId, {
+            $pull: {
+                notifications: not._id
+            }
+        })
 
         return res.status(200).send()
+
     } catch (error) {
         return res.status(400).send({error: 'failed at removeUserNotification'})
     }
